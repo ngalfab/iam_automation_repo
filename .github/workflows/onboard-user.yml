@@ -1,1 +1,71 @@
+name: Onboard New Entra ID User
 
+on:
+  workflow_dispatch:
+    inputs:
+      first_name:
+        description: 'User First Name'
+        required: true
+        type: string
+      last_name:
+        description: 'User Last Name'
+        required: true
+        type: string
+      user_principal_name:
+        description: 'User Principal Name / Email (e.g., user@yourdomain.onmicrosoft.com)'
+        required: true
+        type: string
+      job_title:
+        description: 'Job Title'
+        required: false
+        default: 'Cloud Engineer'
+        type: string
+
+# Permissions required for OIDC token request
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  onboard-user:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Create User & Assign to Security Group
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            echo "Creating user ${{ inputs.user_principal_name }}..."
+
+            # 1. Generate a temporary complex password
+            TEMP_PASSWORD="TempUser123!$(date +%s)"
+            
+            # 2. Create the user in Entra ID
+            NEW_USER_ID=$(az ad user create \
+              --display-name "${{ inputs.first_name }} ${{ inputs.last_name }}" \
+              --user-principal-name "${{ inputs.user_principal_name }}" \
+              --password "$TEMP_PASSWORD" \
+              --force-change-password-next-sign-in true \
+              --mail-nickname "${{ inputs.first_name }}${{ inputs.last_name }}" \
+              --query id -o tsv)
+
+            echo "User created successfully with Object ID: $NEW_USER_ID"
+
+            # 3. Add user to the Onboarding Security Group
+            echo "Adding user to Security Group..."
+            az ad group member add \
+              --group ${{ secrets.ONBOARDING_GROUP_ID }} \
+              --member-id $NEW_USER_ID
+
+            echo "✅ Onboarding completed successfully!"
