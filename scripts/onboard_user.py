@@ -84,5 +84,9 @@ if __name__ == "__main__":
         print("::error::No user payload found in environment.")
         exit(1)
         
-    user_payload = json.loads(raw_payload)
-    onboard_user(user_payload)
+    # ✅ Construct payload directly from environment variables
+user_payload = {
+    "first_name": os.environ.get("USER_FIRST_NAME"),
+    "last_name": os.environ.get("USER_LAST_NAME"),
+    "username": os.environ.get("USER_USERNAME")
+}
