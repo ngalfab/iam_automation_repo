@@ -1,26 +1,29 @@
-name: Onboard New Entra ID User
+name: Onboard User to Entra ID
 
-# Correct 'on' section indentation:
 on:
+  push:
+    branches:
+      - main # Triggers automatically when code is pushed to main
+    paths:
+      - "payloads/**" # Optional: only trigger when files in payloads/ are updated
   workflow_dispatch:
     inputs:
       first_name:
-        description: 'First Name'
-        required: true
+        description: "First Name"
+        required: false
       last_name:
-        description: 'Last Name'
-        required: true
+        description: "Last Name"
+        required: false
       username:
-        description: 'Username (e.g. jdoe)'
-        required: true
-
-permissions:
-  id-token: write
-  contents: read
+        description: "Username / Alias"
+        required: false
 
 jobs:
-  onboard-user:
+  onboard:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - name: Checkout Code
@@ -29,11 +32,10 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
 
       - name: Install Dependencies
-        run: pip install -r requirements.txt
+        run: pip install requests
 
       - name: Azure Login via OIDC
         uses: azure/login@v2
@@ -42,12 +44,10 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
-      # Execute onboarding script
       - name: Execute Onboarding Script
         env:
           AZURE_DOMAIN: "Ngalemo182.onmicrosoft.com"
           ONBOARDING_GROUP_ID: ${{ secrets.ONBOARDING_GROUP_ID }}
-          # Pass workflow inputs directly
           USER_FIRST_NAME: ${{ inputs.first_name }}
           USER_LAST_NAME: ${{ inputs.last_name }}
           USER_USERNAME: ${{ inputs.username }}

@@ -1,29 +1,5 @@
 {
-  "schemas": [
-    "urn:ietf:params:scim:schemas:core:2.0:User",
-    "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
-  ],
-  "userName": "alex.cloud@company.com",
-  "name": {
-    "givenName": "Alex",
-    "familyName": "Taylor",
-    "formatted": "Alex Taylor"
-  },
-  "emails": [
-    {
-      "value": "alex.cloud@company.com",
-      "type": "work",
-      "primary": true
-    }
-  ],
-  "active": true,
-  "title": "Cloud Engineer",
-  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
-    "employeeNumber": "EMP-84920",
-    "department": "Infrastructure",
-    "manager": {
-      "value": "usr_9988776655",
-      "displayName": "Sarah Jenkins"
-    }
-  }
+  "first_name": "Alex",
+  "last_name": "Taylor",
+  "username": "alex.cloud"
 }
