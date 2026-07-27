@@ -42,13 +42,13 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           allow-no-subscriptions: true
 
+      # Execute onboarding script
       - name: Execute Onboarding Script
         env:
           AZURE_DOMAIN: "yourdomain.onmicrosoft.com"
           ONBOARDING_GROUP_ID: ${{ secrets.ONBOARDING_GROUP_ID }}
-          USER_PAYLOAD: >-
-            ${{ 
-              format('{{\"first_name\":\"{0}\",\"last_name\":\"{1}\",\"username\":\"{2}\"}}', 
-                inputs.first_name, inputs.last_name, inputs.username) 
-            }}
+          # Pass workflow inputs directly
+          USER_FIRST_NAME: ${{ inputs.first_name }}
+          USER_LAST_NAME: ${{ inputs.last_name }}
+          USER_USERNAME: ${{ inputs.username }}
         run: python scripts/onboard_user.py
