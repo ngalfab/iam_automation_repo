@@ -45,7 +45,7 @@ jobs:
       # Execute onboarding script
       - name: Execute Onboarding Script
         env:
-          AZURE_DOMAIN: "yourdomain.onmicrosoft.com"
+          AZURE_DOMAIN: "Ngalemo182.onmicrosoft.com"
           ONBOARDING_GROUP_ID: ${{ secrets.ONBOARDING_GROUP_ID }}
           # Pass workflow inputs directly
           USER_FIRST_NAME: ${{ inputs.first_name }}
